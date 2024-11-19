@@ -12,22 +12,24 @@ import org.ti.apiincidencias.service.IUsuarioService;
 public class UsuariosRestController{
     @Autowired
     private IUsuarioService service;
+    //EL ADMINISTRADOR PODRA VER TODOS LOS USUARIOS
     @GetMapping("/Utodos")
     public ResponseEntity<UsuarioResponseRest> todos(){
         ResponseEntity<UsuarioResponseRest> response = service.todos();
         return response;
     }
+    //EL ADMINISTRADOR PODRA ELIMINAR CUALQUIER USUARIO(DE MANERA LOGICA)
     @PutMapping("/UEliminar/{id}")
     public ResponseEntity<UsuarioResponseRest> eliminar(@RequestBody Usuario usuario, @PathVariable  Long id){
         ResponseEntity<UsuarioResponseRest>response= service.eliminarU(usuario, id);
         return response;
     }
-    @PutMapping("/UCrear")
+    //EL ADMINISTRADOR PODRA CREAR CUALQUIER USUARIO
+    @PostMapping("/UCrear")
     public ResponseEntity<UsuarioResponseRest> crear(@RequestBody Usuario usuario){
         ResponseEntity<UsuarioResponseRest>response= service.crearU(usuario);
         return response;
     }
-
 
 
 

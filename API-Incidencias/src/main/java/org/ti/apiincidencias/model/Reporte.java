@@ -12,6 +12,7 @@ public class Reporte implements Serializable {
     private String titulo;
     private String descripcion;
     private String estado;
+
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] imagen;

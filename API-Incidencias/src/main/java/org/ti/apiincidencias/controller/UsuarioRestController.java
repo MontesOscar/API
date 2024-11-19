@@ -8,12 +8,13 @@ import org.ti.apiincidencias.response.UsuarioResponseRest;
 import org.ti.apiincidencias.service.IUsuarioService;
 
 @RestController
-@RequestMapping("/Admin")
+@RequestMapping("/Usuario")
 public class UsuarioRestController{
     @Autowired
     private IUsuarioService service;
+    //LOS USUARIOS PODRA ACTUALIZAR SUS DATOS LOS USUARIOS
     @PutMapping("/UActualizar/{id}")
-    public ResponseEntity<UsuarioResponseRest> crear(@RequestBody Usuario usuario, @PathVariable  Long id){
+    public ResponseEntity<UsuarioResponseRest> actualizar(@RequestBody Usuario usuario, @PathVariable  Long id){
         ResponseEntity<UsuarioResponseRest>response= service.actualizarU(usuario,id);
         return response;
     }
