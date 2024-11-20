@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.ti.apiincidencias.model.Reporte;
+import org.ti.apiincidencias.model.Usuario;
 import org.ti.apiincidencias.model.dao.ReporteDao;
 import org.ti.apiincidencias.response.ReporteResponseRest;
 
@@ -151,67 +152,91 @@ public class ReporteServiceImpl implements IReporteService {
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    //FALTAN DETALLES
+    //ADMINSTRADOR---Metodo para actualizar el estado de cualquier reporte
+    @Override
+    @Transactional
+    public ResponseEntity<ReporteResponseRest> UactualizarR(Reporte reporte, Long idR, Long idU) {
+        ReporteResponseRest response = new ReporteResponseRest();
+        List<Reporte> list = new ArrayList<>();
+
+        try {
+            Optional<Reporte> buscado = reporteDao.FiltroIDA(idR, idU);
+            if (buscado.isPresent()) {
+                // Actualización del reporte
+                Reporte reporteExistente = buscado.get();
+                reporteExistente.setDescripcion(reporte.getDescripcion());
+                reporteExistente.setImagen(reporte.getImagen());
+                reporteExistente.setTitulo(reporte.getTitulo());
+
+                Reporte actualizado = reporteDao.save(reporteExistente);
+
+                // Verificar si la actualización fue exitosa
+                list.add(actualizado);
+                response.getResponseReporte().setReporte(list);
+                response.setMetadata("Éxito", "1", "Reporte actualizado correctamente");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                log.info("No se encontró el reporte con idR={} e idU={}", idR, idU);
+                response.setMetadata("Error", "-1", "Reporte no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.error("Error al actualizar el reporte: {}", e.getMessage(), e);
+            response.setMetadata("Error", "-1", "Error interno al procesar la solicitud");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     //USUARIO--Metodo para ver solo los reportes del mismo usuario
-    //Aqui el id del usuario al cual se le van a mostrar los reportes se envia por el body NO por URL
-    /*@Transactional
-    public ResponseEntity<ReporteResponseRest> TodosU(Reporte reporte) {
+    //Aqui el id del usuario al cual se le van a mostrar los reportes se envia por el URL
+    @Transactional
+    public ResponseEntity<ReporteResponseRest> TodosU(Long id) {
         ReporteResponseRest response = new ReporteResponseRest();
         try {
-            int id = reporte.getId();
-            List<Reporte> reportes;
-            reportes = reporteDao.FiltroID(id);
-
-
-            log.info("INICIO DEL METODO PARA BUSCAR REPORTES FILTRADOS POR USUARIO");
+            List<Reporte> reportes = (List<Reporte>) reporteDao.FiltroID(id);
+            log.info("EJECUCIÓN DEL MÉTODO SELECT ACTIVAS");
             response.getResponseReporte().setReporte(reportes);
-            response.setMetadata("CORRECTO", "1", "SE ENVIO RESPUESTA");
-
+            response.setMetadata("BIEN", "1", "Reportes por el mismo ID mostradas");
         } catch (Exception e) {
-            log.error("ERROR AL BUSCAR LOS REPORTES", e);
-            response.setMetadata("ERROR", "-1", "ERROR DE RESPUESTA");
+            log.error("RESPUESTA FALLIDA DE LA BUSQUEDA", e);
+            response.setMetadata("ERROR", "-1", "Error al LOS REPORTES");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-*/
-    //USUARIO--Actualizar los datos del reporte si este reporte le pertenece al mismo usuario que lo va a actualizar
-  /* @Override
+    //ADMINISTRADOR-----Metodo para eliminar cualquier reporte
+    @Override
     @Transactional
-    public ResponseEntity<ReporteResponseRest> actualizarR(Reporte reporte, Long id){
+    public ResponseEntity<ReporteResponseRest> UeliminarR(Reporte reporte, Long idR, Long idU) {
         ReporteResponseRest response = new ReporteResponseRest();
         List<Reporte> list = new ArrayList<>();
-        try{
-            List<Reporte> Buscada = reporteDao.ReportesDeUsuario(id);
-            if (Buscada) {
-                Buscada.get().setTitulo(reporte.getTitulo());
-                Buscada.get().setDescripcion(reporte.getDescripcion());
-                Buscada.get().setImagen(reporte.getImagen());
-                Reporte actualizado = reporteDao.save(Buscada.get());
+
+        try {
+            Optional<Reporte> buscado = reporteDao.FiltroIDA(idR, idU);
+            if (buscado.isPresent()) {
+                buscado.get().setEstado(reporte.getEstado());
+                Reporte actualizado = reporteDao.save(buscado.get());
                 if (actualizado != null) {
                     list.add(actualizado);
                     response.getResponseReporte().setReporte(list);
-                    response.setMetadata("BIEN", "1", "REPORTE ACTUALIZADO");
-                }else {
-                    response.setMetadata("ERROR", "-1", "ERROR AL ACTUALIZAR EL REPORTE");
-                    return new ResponseEntity<ReporteResponseRest>(response, HttpStatus.BAD_REQUEST);
+                    response.setMetadata("CORRECTO", "1", "SE ELIMINO LOGICAMENTE");
+                } else {
+                    response.setMetadata("ERROR", "-1", "ERROR DE ELIMINACION");
+                    return new ResponseEntity<ReporteResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
-            }else{
-                log.info("NO EXISTE EL REPORTE");
-                response.setMetadata("ERROR", "-1", "ERROR AL ACTUALIZAR EL REPORTE");
+            } else {
+                log.info("REPORTE NO ENCONTRADO");
+                response.setMetadata("ERROR", "-1", "ERROR DE ELIMINACION");
                 return new ResponseEntity<ReporteResponseRest>(response, HttpStatus.NOT_FOUND);
             }
+
         }catch (Exception e) {
-            response.setMetadata("ERROR", "-1", "ERROR AL ACTUALIZAR EL REPORTE");
-            log.info("ERROR AL ACTUALIZAR");
+            response.setMetadata("ERROR", "-1", "ERROR DE ELIMINACION");
+            log.info("ERROR AL ELIMINAR EL REPORTE");
             return new ResponseEntity<ReporteResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<ReporteResponseRest>(response, HttpStatus.OK);
-    }*/
-
-    //FALTANTES
-    //USUARIO---Eliminar los reportes correspondientes al usuario
+    }
 
 
 }

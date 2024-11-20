@@ -14,10 +14,11 @@ public class UsuarioRestController{
     private IUsuarioService service;
     //LOS USUARIOS PODRA ACTUALIZAR SUS DATOS LOS USUARIOS
     @PutMapping("/UActualizar/{id}")
-    public ResponseEntity<UsuarioResponseRest> actualizar(@RequestBody Usuario usuario, @PathVariable  Long id){
-        ResponseEntity<UsuarioResponseRest>response= service.actualizarU(usuario,id);
+    public ResponseEntity<UsuarioResponseRest> actualizar(@RequestBody Usuario usuario, @PathVariable Long id) {
+        ResponseEntity<UsuarioResponseRest> response = service.UActualizar(usuario, id);
         return response;
     }
+
 
 
 

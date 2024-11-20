@@ -13,7 +13,9 @@ public interface IUsuarioService {
     public ResponseEntity<UsuarioResponseRest> crearU(Usuario usuario);
     //USUARIO--EL USUARIO PODRA ACTUALIZAR SU PROPIO PERFIL(DATOS)
     //FALTAN DETALLES
-    public ResponseEntity<UsuarioResponseRest> actualizarU(Usuario usuario, Long id);
+    public ResponseEntity<UsuarioResponseRest> UActualizar(Usuario usuario, Long id);
+    //INICIO DE SESION
+    public ResponseEntity<UsuarioResponseRest> inicioSesion(Usuario usuario);
 
 
 

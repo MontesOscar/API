@@ -30,6 +30,12 @@ public class UsuariosRestController{
         ResponseEntity<UsuarioResponseRest>response= service.crearU(usuario);
         return response;
     }
+    @PostMapping("/Login")
+    public ResponseEntity<UsuarioResponseRest> login(@RequestBody Usuario usuario) {
+        ResponseEntity<UsuarioResponseRest> response = service.inicioSesion(usuario);
+        return response;
+    }
+
 
 
 

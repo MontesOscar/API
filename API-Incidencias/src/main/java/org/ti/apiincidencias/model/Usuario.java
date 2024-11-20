@@ -12,8 +12,17 @@ public class Usuario implements Serializable {
     private String nombre;
     private String apellido;
     private String password;
+    private String email;
     private String tipo;
     private String estado;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public int getId() {
         return Id;

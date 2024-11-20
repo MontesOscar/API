@@ -7,8 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.ti.apiincidencias.model.Reporte;
 import org.ti.apiincidencias.model.Usuario;
 import org.ti.apiincidencias.model.dao.UsuarioDao;
+import org.ti.apiincidencias.response.ReporteResponseRest;
 import org.ti.apiincidencias.response.UsuarioResponseRest;
 
 import java.util.ArrayList;
@@ -102,32 +104,70 @@ public class UsuarioServiceImpl implements IUsuarioService {
     //USUARIO--EL USUARIO PODRA ACTUALIZAR SU PROPIO PERFIL(DATOS)
     @Override
     @Transactional
-    public ResponseEntity<UsuarioResponseRest> actualizarU(Usuario usuario, Long id) {
+    public ResponseEntity<UsuarioResponseRest> UActualizar(Usuario usuario, Long id) {
         UsuarioResponseRest response = new UsuarioResponseRest();
         List<Usuario> list = new ArrayList<>();
+
         try {
-            Optional<Usuario> Buscada = usuarioDao.findById(id);
-            if (Buscada.isPresent()) {
-                Buscada.get().setEstado(usuario.getEstado());
-                Usuario actualizado = usuarioDao.save(Buscada.get());
+            Optional<Usuario> buscado = usuarioDao.FiltroIDU(id);
+            if (buscado.isPresent()) {
+                Usuario usuarioExistente = buscado.get();
+                usuarioExistente.setNombre(usuario.getNombre());
+                usuarioExistente.setApellido(usuario.getApellido());
+                usuarioExistente.setPassword(usuario.getPassword());
+
+                Usuario actualizado = usuarioDao.save(usuarioExistente);
+
                 if (actualizado != null) {
                     list.add(actualizado);
                     response.getResponseUsuario().setUsuario(list);
-                    response.setMetadata("BIEN", "1", "ESTADO DEL USUARIO ACTUALIZADO");
+                    response.setMetadata("Éxito", "1", "Usuario actualizado correctamente");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    response.setMetadata("ERROR", "-1", "ERROR AL ACTUALIZAR EL ESTADO DEL USUARIO");
-                    return new ResponseEntity<UsuarioResponseRest>(response, HttpStatus.BAD_REQUEST);
+                    response.setMetadata("Error", "-1", "Error al actualizar el usuario");
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             } else {
-                log.info("NO EXISTE EL USUARIO");
-                response.setMetadata("ERROR", "-1", "ERROR AL ACTUALIZAR EL ESTADO DEL USUARIO");
-                return new ResponseEntity<UsuarioResponseRest>(response, HttpStatus.NOT_FOUND);
+                log.info("Usuario con ID={} no encontrado", id);
+                response.setMetadata("Error", "-1", "Usuario no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            response.setMetadata("ERROR", "-1", "ERROR AL ACTUALIZAR EL ESTADO DEL USUARIO");
-            log.info("ERROR AL ACTUALIZAR");
-            return new ResponseEntity<UsuarioResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Error al actualizar el usuario: {}", e.getMessage(), e);
+            response.setMetadata("Error", "-1", "Error interno al procesar la solicitud");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+
+    @Override
+    @Transactional
+    public ResponseEntity<UsuarioResponseRest> inicioSesion(Usuario usuario) {
+        UsuarioResponseRest response = new UsuarioResponseRest();
+
+        try {
+            // Buscar usuario por correo
+            Optional<Usuario> buscado = usuarioDao.findByCorreo(usuario.getEmail());
+            if (buscado.isPresent()) {
+                Usuario usuarioExistente = buscado.get();
+
+                // Validar contraseña
+                if (usuarioExistente.getPassword().equals(usuario.getPassword())) {
+                    response.setMetadata("Bien", "1", "Sesión iniciada correctamente");
+                } else {
+                    response.setMetadata("Error", "-1", "Contraseña incorrecta");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                response.setMetadata("Error", "-1", "Usuario no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.error("Error al iniciar sesión: {}", e.getMessage(), e);
+            response.setMetadata("Error", "-1", "Error interno al procesar la solicitud");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
