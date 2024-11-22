@@ -152,7 +152,7 @@ public class ReporteServiceImpl implements IReporteService {
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    //ADMINSTRADOR---Metodo para actualizar el estado de cualquier reporte
+    //USUARIO---Metodo para actualizar el reporte del mismo usuario
     @Override
     @Transactional
     public ResponseEntity<ReporteResponseRest> UactualizarR(Reporte reporte, Long idR, Long idU) {
@@ -167,6 +167,7 @@ public class ReporteServiceImpl implements IReporteService {
                 reporteExistente.setDescripcion(reporte.getDescripcion());
                 reporteExistente.setImagen(reporte.getImagen());
                 reporteExistente.setTitulo(reporte.getTitulo());
+
 
                 Reporte actualizado = reporteDao.save(reporteExistente);
 

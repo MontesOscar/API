@@ -12,6 +12,7 @@ public class Usuario implements Serializable {
     private String nombre;
     private String apellido;
     private String password;
+    private byte [] fotoP;
     private String email;
     private String tipo;
     private String estado;
@@ -22,6 +23,14 @@ public class Usuario implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public byte[] getFotoP() {
+        return fotoP;
+    }
+
+    public void setFotoP(byte[] fotoP) {
+        this.fotoP = fotoP;
     }
 
     public int getId() {

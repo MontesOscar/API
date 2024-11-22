@@ -115,6 +115,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
                 usuarioExistente.setNombre(usuario.getNombre());
                 usuarioExistente.setApellido(usuario.getApellido());
                 usuarioExistente.setPassword(usuario.getPassword());
+                usuarioExistente.setFotoP(usuario.getFotoP());
 
                 Usuario actualizado = usuarioDao.save(usuarioExistente);
 
@@ -139,7 +140,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         }
     }
 
-
+//AMBOS--Metodo para el inicio de sesion
     @Override
     @Transactional
     public ResponseEntity<UsuarioResponseRest> inicioSesion(Usuario usuario) {
