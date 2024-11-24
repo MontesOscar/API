@@ -167,6 +167,8 @@ public class ReporteServiceImpl implements IReporteService {
                 reporteExistente.setDescripcion(reporte.getDescripcion());
                 reporteExistente.setImagen(reporte.getImagen());
                 reporteExistente.setTitulo(reporte.getTitulo());
+                reporteExistente.setLatitud(reporte.getLatitud());
+                reporteExistente.setLongitud(reporte.getLongitud());
 
 
                 Reporte actualizado = reporteDao.save(reporteExistente);
