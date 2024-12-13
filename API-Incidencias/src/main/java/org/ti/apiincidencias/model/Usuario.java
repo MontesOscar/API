@@ -12,7 +12,9 @@ public class Usuario implements Serializable {
     private String nombre;
     private String apellido;
     private String password;
-    private byte [] fotoP;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String fotoP; // Esta es la cadena Base64 que representa la imagen
     private String email;
     private String tipo;
     private String estado;
@@ -25,11 +27,11 @@ public class Usuario implements Serializable {
         this.email = email;
     }
 
-    public byte[] getFotoP() {
+    public String getFotoP() {
         return fotoP;
     }
 
-    public void setFotoP(byte[] fotoP) {
+    public void setFotoP(String fotoP) {
         this.fotoP = fotoP;
     }
 

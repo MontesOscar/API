@@ -1,9 +1,6 @@
 package org.ti.apiincidencias.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 
@@ -12,7 +9,9 @@ public class Anuncios implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
-    private byte[] Imagen;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String imagen; // Esta es la cadena Base64 que representa la imagen
 
     public int getId() {
         return Id;
@@ -22,11 +21,11 @@ public class Anuncios implements Serializable {
         Id = id;
     }
 
-    public byte[] getImagen() {
-        return Imagen;
+    public String getImagen() {
+        return imagen;
     }
 
-    public void setImagen(byte[] imagen) {
-        Imagen = imagen;
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }

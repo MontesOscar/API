@@ -16,8 +16,8 @@ public class Reporte implements Serializable {
     private double latitud;
 
     @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] imagen;
+    @Column(columnDefinition = "LONGTEXT")
+    private String imagen; // Esta es la cadena Base64 que representa la imagen
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Usuario usuario;
@@ -70,11 +70,11 @@ public class Reporte implements Serializable {
         this.estado = estado;
     }
 
-    public byte[] getImagen() {
+    public String getImagen() {
         return imagen;
     }
 
-    public void setImagen(byte[] imagen) {
+    public void setImagen(String imagen) {
         this.imagen = imagen;
     }
 
